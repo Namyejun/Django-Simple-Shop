@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block contents %}
+<script>
+    // ECMAScript = ES
+    // 옛날 스타일 (ES6 이전 스타일)
+    // function productMouseOver(id) {
+
+    // }
+    // 요즘 스타일 (ES6 이후 스타일)
+    const productMouseOver = (id) => {
+        fetch("/api/products/" + id)
+            .then((response) => response.json())
+            .then((data) => {
+                $("#product-" + id).popover({
+                    html: true,
+                    content: `<h6>${data.product_name}</h6>
+                            <div class='col-12'>
+                              <p>가격 : ${data.product_price} 원</p>
+                              <p>재고 : ${data.product_stock}</p>
+                            </div>`
+                }).popover('show');
+            })
+    };
+    const productMouseLeave = (id) => {
+        $("#product-" + id).popover('hide');
+    }
+</script>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <table class="table table-light">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">상품명</th>
+                    <th scope="col">가격</th>
+                    <th scope="col">재고</th>
+                    <th scope="col">등록날짜</th>
+                </tr>
+            </thead>
+            <tbody class="text-dark">
+                {% for product in product_list %}
+                <tr>
+                    <td scope="row"> {{ product.id }}</td>
+                    <td scope="row"> <a id = "product-{{ product.id }}" href="detail/{{ product.id }}" onmouseover="productMouseOver({{ product.id }})" onmouseleave="productMouseLeave({{ product.id }})">{{ product.product_name }}</a></td>
+                    <td scope="row"> {{ product.product_price|intcomma }}원</td>
+                    <td scope="row"> {{ product.product_stock }}</td>
+                    <td scope="row"> {{ product.registered_date|date:'Y-m-d H:i' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+{% endblock%}
